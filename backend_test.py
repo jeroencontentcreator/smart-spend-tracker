@@ -170,7 +170,8 @@ def main():
     
     # Print results
     print(f"\n===== TEST RESULTS =====")
-    print(f"Tests passed: {tester.tests_passed}/{tester.tests_run} ({tester.tests_passed/tester.tests_run*100:.1f}%)")
+    pass_percentage = (tester.tests_passed/tester.tests_run*100) if tester.tests_run > 0 else 0
+    print(f"Tests passed: {tester.tests_passed}/{tester.tests_run} ({pass_percentage:.1f}%)")
     
     # Print failed tests
     failed_tests = {name: details for name, details in tester.test_results.items() if not details.get("success")}
