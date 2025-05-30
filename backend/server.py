@@ -152,12 +152,12 @@ async def add_to_goal(goal_id: str, amount: float):
 async def get_dashboard_data():
     from datetime import datetime, timedelta
     
-    today = datetime.utcnow().date()
-    month_start = today.replace(day=1)
+    today = datetime.utcnow().date().isoformat()
+    month_start = datetime.utcnow().date().replace(day=1).isoformat()
     
     # Get month and today expenses
-    monthly_expenses = await db.expenses.find({"date": {"$gte": month_start.isoformat()}}).to_list(1000)
-    today_expenses = await db.expenses.find({"date": today.isoformat()}).to_list(1000)
+    monthly_expenses = await db.expenses.find({"date": {"$gte": month_start}}).to_list(1000)
+    today_expenses = await db.expenses.find({"date": today}).to_list(1000)
     
     total_month = sum(exp['amount'] for exp in monthly_expenses)
     total_today = sum(exp['amount'] for exp in today_expenses)
