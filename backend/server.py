@@ -41,27 +41,27 @@ class ExpenseCreate(BaseModel):
     amount: float
     category: ExpenseCategory
     description: str
-    date: Optional[date] = Field(default_factory=date.today)
+    date: str = Field(default_factory=lambda: datetime.utcnow().date().isoformat())
 
 class Expense(BaseModel):
     id: str = Field(default_factory=lambda: str(uuid.uuid4()))
     amount: float
     category: ExpenseCategory
     description: str
-    date: date
+    date: str
     created_at: datetime = Field(default_factory=datetime.utcnow)
 
 class SavingsGoalCreate(BaseModel):
     title: str
     target_amount: float
-    deadline: Optional[date] = None
+    deadline: Optional[str] = None
 
 class SavingsGoal(BaseModel):
     id: str = Field(default_factory=lambda: str(uuid.uuid4()))
     title: str
     target_amount: float
     current_amount: float = 0.0
-    deadline: Optional[date] = None
+    deadline: Optional[str] = None
     created_at: datetime = Field(default_factory=datetime.utcnow)
 
 class DashboardData(BaseModel):
