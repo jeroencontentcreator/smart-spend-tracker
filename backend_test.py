@@ -13,11 +13,11 @@ class SmartSpendAPITester:
 
     def run_test(self, name, method, endpoint, expected_status, data=None):
         """Run a single API test"""
-        url = f"{self.base_url}/api/{endpoint}"
+        url = self.base_url + "/api/" + endpoint
         headers = {'Content-Type': 'application/json'}
         
         self.tests_run += 1
-        print(f"\n🔍 Testing {name}...")
+        print("\n🔍 Testing {}...".format(name))
         
         try:
             if method == 'GET':
@@ -32,15 +32,15 @@ class SmartSpendAPITester:
             success = response.status_code == expected_status
             if success:
                 self.tests_passed += 1
-                print(f"✅ Passed - Status: {response.status_code}")
+                print("✅ Passed - Status: {}".format(response.status_code))
                 try:
                     response_data = response.json()
-                    print(f"Response: {json.dumps(response_data, indent=2)[:500]}...")
+                    print("Response: {}...".format(json.dumps(response_data, indent=2)[:500]))
                 except:
-                    print(f"Response: {response.text[:200]}...")
+                    print("Response: {}...".format(response.text[:200]))
             else:
-                print(f"❌ Failed - Expected {expected_status}, got {response.status_code}")
-                print(f"Response: {response.text[:200]}...")
+                print("❌ Failed - Expected {}, got {}".format(expected_status, response.status_code))
+                print("Response: {}...".format(response.text[:200]))
 
             self.test_results[name] = {
                 "success": success,
@@ -51,7 +51,7 @@ class SmartSpendAPITester:
             return success, response.json() if success and response.text else {}
 
         except Exception as e:
-            print(f"❌ Failed - Error: {str(e)}")
+            print("❌ Failed - Error: {}".format(str(e)))
             self.test_results[name] = {
                 "success": False,
                 "error": str(e)
@@ -70,7 +70,7 @@ class SmartSpendAPITester:
     def test_create_expense(self, amount, category, description):
         """Test creating an expense"""
         return self.run_test(
-            f"Create Expense ({category})",
+            "Create Expense ({})".format(category),
             "POST",
             "expenses",
             200,
@@ -147,7 +147,7 @@ def main():
         tester.test_create_expense(
             amount=100 + (i * 50),
             category=category,
-            description=f"Test {category} expense {timestamp}"
+            description="Test {} expense {}".format(category, timestamp)
         )
     
     # 3. Get all expenses
@@ -158,7 +158,7 @@ def main():
     
     # 5. Create a savings goal
     tester.test_create_goal(
-        title=f"Test Goal {timestamp}",
+        title="Test Goal {}".format(timestamp),
         target_amount=5000
     )
     
@@ -169,7 +169,7 @@ def main():
     tester.test_get_analytics()
     
     # Print results
-    print(f"\n===== TEST RESULTS =====")
+    print("\n===== TEST RESULTS =====")
     pass_percentage = 0
     if tester.tests_run > 0:
         pass_percentage = (tester.tests_passed/tester.tests_run*100)
@@ -180,7 +180,9 @@ def main():
     if failed_tests:
         print("\nFailed tests:")
         for name, details in failed_tests.items():
-            print(f"- {name}: {details.get('error', f'Expected {details.get('expected_status')}, got {details.get('status_code')}')}") 
+            error_msg = details.get('error', 'Expected {}, got {}'.format(
+                details.get('expected_status'), details.get('status_code')))
+            print("- {}: {}".format(name, error_msg))
     
     return 0 if tester.tests_passed == tester.tests_run else 1
 
